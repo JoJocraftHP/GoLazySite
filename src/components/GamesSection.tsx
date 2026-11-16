@@ -33,9 +33,10 @@ interface MobileGameCardProps {
   game: Game;
   stat?: GameStat;
   statsLoading: boolean;
+  featured?: boolean;
 }
 
-function MobileGameCard({ game, stat, statsLoading }: MobileGameCardProps) {
+function MobileGameCard({ game, stat, statsLoading, featured }: MobileGameCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
   const isNew = useIsNewGame(game.released);
 
@@ -45,7 +46,11 @@ function MobileGameCard({ game, stat, statsLoading }: MobileGameCardProps) {
     game.fallbackImage
   );
 
-  const ccu = ccuDisplay(stat?.playing, stat?.peakPlaying);
+  const ccu = featured
+    ? ccuDisplay(stat?.playing, null)
+    : ccuDisplay(stat?.playing, stat?.peakPlaying);
+  const peak = stat?.peakPlaying ?? null;
+  const showPeak = featured && peak !== null && ccu !== null && peak > ccu.value;
   const visits = stat?.visits ?? null;
   const showStatSkeleton = statsLoading && ccu === null;
 
@@ -89,6 +94,12 @@ function MobileGameCard({ game, stat, statsLoading }: MobileGameCardProps) {
             <span className="top-game-icon__stat-placeholder" />
           ) : null}
 
+          {showPeak && (
+            <span className="top-game-icon__peak">
+              {peak.toLocaleString("en-US")} peak
+            </span>
+          )}
+
           {/* Plays pill — amber */}
           {visits !== null ? (
             <span className="top-game-icon__plays">
@@ -124,7 +135,11 @@ function TopGameIcon({ game, stat, rank, statsLoading }: TopGameIconProps) {
     game.fallbackImage
   );
 
-  const ccu = ccuDisplay(stat?.playing, stat?.peakPlaying);
+  const ccu = isCenter
+    ? ccuDisplay(stat?.playing, null)
+    : ccuDisplay(stat?.playing, stat?.peakPlaying);
+  const peak = stat?.peakPlaying ?? null;
+  const showPeak = isCenter && peak !== null && ccu !== null && peak > ccu.value;
   const visits = stat?.visits ?? null;
   // Show shimmer only while SWR is still fetching; once settled show "—" or the value
   const showStatSkeleton = statsLoading && ccu === null;
@@ -191,6 +206,12 @@ function TopGameIcon({ game, stat, rank, statsLoading }: TopGameIconProps) {
             ) : showStatSkeleton ? (
               <span className="top-game-icon__stat-placeholder" />
             ) : null}
+
+            {showPeak && (
+              <span className="top-game-icon__peak">
+                {peak.toLocaleString("en-US")} peak
+              </span>
+            )}
 
             {/* Plays pill — amber */}
             {visits !== null ? (
@@ -278,12 +299,13 @@ export default function GamesSection() {
 
         {/* Mobile: vertical stack — top 3 by CCU */}
         <div className="top-games-mobile-stack">
-          {top5.slice(0, 3).map((game) => (
+          {top5.slice(0, 3).map((game, rank) => (
             <MobileGameCard
               key={game.universeId}
               game={game}
               stat={statMap.get(game.universeId)}
               statsLoading={isLoading}
+              featured={rank === 0}
             />
           ))}
         </div>

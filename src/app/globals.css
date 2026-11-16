@@ -1905,6 +1905,25 @@ select:focus-visible {
   animation: liveDotPulse 2s ease-in-out infinite;
 }
 
+.top-game-icon__peak {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(139, 125, 255, 0.1);
+  border: 1px solid rgba(139, 125, 255, 0.24);
+  color: var(--color-primary-light);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.top-game-icon--featured .top-game-icon__peak {
+  font-size: 0.76rem;
+  padding: 0.24rem 0.75rem;
+}
+
 /* Total plays pill — amber */
 .top-game-icon__plays {
   display: inline-flex;
