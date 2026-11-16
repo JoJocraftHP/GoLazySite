@@ -9,7 +9,7 @@ import { useRobloxImage } from "@/hooks/useRobloxImages";
 import { useIsNewGame } from "@/hooks/useIsNewGame";
 import { GAMES } from "@/lib/data";
 import { GAME_ICONS_URL } from "@/lib/roblox";
-import { formatNumber } from "@/lib/format";
+import { ccuDisplay, formatNumber } from "@/lib/format";
 import type { Game } from "@/lib/data";
 import type { GameStat } from "@/hooks/useGameStats";
 
@@ -45,7 +45,7 @@ function MobileGameCard({ game, stat, statsLoading }: MobileGameCardProps) {
     game.fallbackImage
   );
 
-  const ccu = stat?.playing ?? null;
+  const ccu = ccuDisplay(stat?.playing, stat?.peakPlaying);
   const visits = stat?.visits ?? null;
   const showStatSkeleton = statsLoading && ccu === null;
 
@@ -82,8 +82,8 @@ function MobileGameCard({ game, stat, statsLoading }: MobileGameCardProps) {
           {/* CCU pill — green */}
           {ccu !== null ? (
             <span className="top-game-icon__ccu">
-              <span className="top-game-icon__ccu-dot" />
-              {ccu.toLocaleString("en-US")}
+              {!ccu.isPeak && <span className="top-game-icon__ccu-dot" />}
+              {ccu.value.toLocaleString("en-US")}{ccu.isPeak && " peak"}
             </span>
           ) : showStatSkeleton ? (
             <span className="top-game-icon__stat-placeholder" />
@@ -124,7 +124,7 @@ function TopGameIcon({ game, stat, rank, statsLoading }: TopGameIconProps) {
     game.fallbackImage
   );
 
-  const ccu = stat?.playing ?? null;
+  const ccu = ccuDisplay(stat?.playing, stat?.peakPlaying);
   const visits = stat?.visits ?? null;
   // Show shimmer only while SWR is still fetching; once settled show "—" or the value
   const showStatSkeleton = statsLoading && ccu === null;
@@ -185,8 +185,8 @@ function TopGameIcon({ game, stat, rank, statsLoading }: TopGameIconProps) {
             {/* CCU pill — green */}
             {ccu !== null ? (
               <span className="top-game-icon__ccu">
-                <span className="top-game-icon__ccu-dot" />
-                {ccu.toLocaleString("en-US")}
+                {!ccu.isPeak && <span className="top-game-icon__ccu-dot" />}
+                {ccu.value.toLocaleString("en-US")}{ccu.isPeak && " peak"}
               </span>
             ) : showStatSkeleton ? (
               <span className="top-game-icon__stat-placeholder" />

@@ -14,7 +14,7 @@ import { useRobloxImage } from "@/hooks/useRobloxImages";
 import { useIsNewGame } from "@/hooks/useIsNewGame";
 import { GAMES } from "@/lib/data";
 import { GAME_ICONS_URL } from "@/lib/roblox";
-import { formatNumber } from "@/lib/format";
+import { ccuDisplay, formatNumber } from "@/lib/format";
 import type { Game } from "@/lib/data";
 
 const universeIds = GAMES.map((g) => g.universeId);
@@ -34,7 +34,7 @@ export default function GameDetailClient({ game }: { game: Game }) {
   const stat = statMap.get(game.universeId);
   const iconSrc = useRobloxImage(GAME_ICONS_URL, game.universeId, game.fallbackImage);
 
-  const ccu = stat?.playing ?? null;
+  const ccu = ccuDisplay(stat?.playing, stat?.peakPlaying);
   const likeRate = (() => {
     const up = stat?.upVotes ?? null;
     const down = stat?.downVotes ?? null;
@@ -99,8 +99,8 @@ export default function GameDetailClient({ game }: { game: Game }) {
               {isNew && <span className="game-badge game-badge--new">NEW</span>}
               {ccu !== null && (
                 <span className="top-game-icon__ccu">
-                  <span className="top-game-icon__ccu-dot" />
-                  {ccu.toLocaleString("en-US")} playing
+                  {!ccu.isPeak && <span className="top-game-icon__ccu-dot" />}
+                  {ccu.value.toLocaleString("en-US")} {ccu.isPeak ? "peak" : "playing"}
                 </span>
               )}
             </div>
